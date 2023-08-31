@@ -1,0 +1,13 @@
+{
+  "name": "unidade_2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "2.6A.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1", 
+    "start": "ts-node ./src/2.7.2.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
