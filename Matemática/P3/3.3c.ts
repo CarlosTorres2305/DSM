@@ -11202,7 +11202,6 @@ const productList: [number, string][] = [
 
 ];
 
-// Produtos mencionados
 const mentionedProducts: string[] = ["café", "adoçante", "leite"];
 
 // Inicialize um objeto para rastrear se os produtos mencionados aparecem em cada lista
@@ -11219,19 +11218,41 @@ productList.forEach(([code, product]) => {
   productsAppearInLists[code].push(product);
 });
 
-// Encontrar listas que não contêm os produtos mencionados
-const listsWithoutProducts = Object.keys(productsAppearInLists)
+// Encontrar listas que contêm 1 ou 2 produtos
+const listsWithOneOrTwoProducts = Object.keys(productsAppearInLists)
   .filter((listCode) => {
     const productsInList = productsAppearInLists[parseInt(listCode, 10)] || [];
-    return mentionedProducts.some(product => !productsInList.includes(product));
+    const matchingProducts = mentionedProducts.filter(product => productsInList.includes(product));
+
+    return matchingProducts.length >= 1 && matchingProducts.length <= 2;
   })
   .map((listCode) => parseInt(listCode, 10));
 
-// Verificar e exibir os resultados
-if (listsWithoutProducts.length > 0) {
-  console.log(`Argumento falso: Listas ${listsWithoutProducts.join(', ')} não contêm ${mentionedProducts.join(', ')}.`);
+// Verificar e exibir os resultados para 1 ou 2 produtos
+if (listsWithOneOrTwoProducts.length > 0) {
+  console.log(`Listas ${listsWithOneOrTwoProducts.join(', ')} contêm 1 ou 2 produtos ${mentionedProducts.join(', ')}
+  logo não é viável a aplicação de desconto.`);
 } else {
-  console.log("O argumento é verdadeiro, pois os produtos mencionados aparecem em todas as listas.");
+  console.log(`Não existem listas que contém parcialmente os produtos ${mentionedProducts.join(', ')}.`);
+}
+
+console.log('--------------------------------------------------------------------------------------------------')
+
+// Encontrar listas que contêm os três produtos
+const listsWithAllProducts = Object.keys(productsAppearInLists)
+  .filter((listCode) => {
+    const productsInList = productsAppearInLists[parseInt(listCode, 10)] || [];
+    return mentionedProducts.every(product => productsInList.includes(product));
+  })
+  .map((listCode) => parseInt(listCode, 10));
+
+// Verificar e exibir os resultados para os três produtos
+if (listsWithAllProducts.length > 0) {
+  console.log(`Nas vendas mencionadas a seguir houve aquisição dos produtos ${mentionedProducts.join(', ')} Logo é viável a aplicação de desconto.`);
+  console.log('--------------------------------------------------------------------------------------------------')
+  console.log(`LISTA: ${listsWithAllProducts.join(', ')}`)  
+} else {
+  console.log(`Não existe lista que contenha os três produtos logo a conclusão do argumento é falso ${mentionedProducts.join(', ')}.`);
 }
 
 
