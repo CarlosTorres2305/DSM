@@ -11209,66 +11209,82 @@ const productsAppearInLists: { [code: number]: string[] } = {};
 
 // Processar cada produto na lista
 productList.forEach(([code, product]) => {
-  
-  if (!productsAppearInLists[code]) {
-    productsAppearInLists[code] = [];
-  }
 
-  // Adicionar o produto à lista
-  productsAppearInLists[code].push(product);
+    if (!productsAppearInLists[code]) {
+        productsAppearInLists[code] = [];
+    }
+
+    // Adicionar o produto à lista
+    productsAppearInLists[code].push(product);
 });
 
 // Verificar listas que contém 1 ou 2 produtos
 const listsWithOneOrTwoProducts = Object.keys(productsAppearInLists)
-  .filter((listCode) => {
-    const productsInList = productsAppearInLists[parseInt(listCode, 10)] || [];
-    const matchingProducts = mentionedProducts.filter(product => productsInList.includes(product));
+    .filter((listCode) => {
+        const productsInList = productsAppearInLists[parseInt(listCode, 10)] || [];
+        const matchingProducts = mentionedProducts.filter(product => productsInList.includes(product));
 
-    return matchingProducts.length >= 1 && matchingProducts.length <= 2;
-  })
-  .map((listCode) => parseInt(listCode, 10));
+        return matchingProducts.length >= 1 && matchingProducts.length <= 2;
+    })
+    .map((listCode) => parseInt(listCode, 10));
 
-//  Exibir os resultados para 1 ou 2 produtos
+/*
+    //  Exibir os resultados para 1 ou 2 produtos
 if (listsWithOneOrTwoProducts.length > 0) {
-  console.log(`Listas ${listsWithOneOrTwoProducts.join(', ')} contêm 1 ou 2 produtos ${mentionedProducts.join(', ')}
+    console.log(`Listas ${listsWithOneOrTwoProducts.join(', ')} contêm 1 ou 2 produtos ${mentionedProducts.join(', ')}
   logo não é viável a aplicação de desconto.`);
 } else {
-  console.log(`Não existem listas que contém parcialmente os produtos ${mentionedProducts.join(', ')}.`);
+    console.log(`Não existem listas que contém parcialmente os produtos ${mentionedProducts.join(', ')}.`);
 }
 
 console.log('----------------------------------------------------------------------------------------------------------------------------------------')
+*/
 
 // Encontrar listas que contêm os três produtos
 const listsWithAllProducts = Object.keys(productsAppearInLists)
-  .filter((listCode) => {
-    const productsInList = productsAppearInLists[parseInt(listCode, 10)] || [];
-    return mentionedProducts.every(product => productsInList.includes(product));
-  })
-  .map((listCode) => parseInt(listCode, 10));
+    .filter((listCode) => {
+        const productsInList = productsAppearInLists[parseInt(listCode, 10)] || [];
+        return mentionedProducts.every(product => productsInList.includes(product));
+    })
+    .map((listCode) => parseInt(listCode, 10));
 
- //Formatar
-  function formatListAsTable(list: number[]): string {
+//Formatar
+function formatListAsTable(list: number[]): string {
     const header = 'Código\t| Produtos';
     const separator = '----------------------';
-  
+
     const body = list.map((code) => {
-      const productsInList = productsAppearInLists[code] || [];
-      const productListString = productsInList.join(', ');
-      return `${code}\t| ${productListString}`;
+        const productsInList = productsAppearInLists[code] || [];
+        const productListString = productsInList.join(', ');
+        return `${code}\t| ${productListString}`;
     });
-  
+
     return [header, separator, ...body].join('\n');
-  }
+}
 
 
-  // Saída
-if (listsWithAllProducts.length > 0) {
-  console.log(`Nas vendas mencionadas a seguir houve aquisição dos produtos ${mentionedProducts.join(', ')} Logo é viável a aplicação de desconto.`);
-  console.log('----------------------------------------------------------------------------------------------------------------------------------------')
-  const formattedTable = formatListAsTable(listsWithAllProducts);
-  console.log(`Listas com os três produtos:\n${formattedTable}`); 
+// Saída
+if (listsWithOneOrTwoProducts.length > 0 && listsWithAllProducts.length > 0) {
+
+    const formattedTable = formatListAsTable(listsWithOneOrTwoProducts);
+    console.log(`Total de conjuntos de vendas computadas ${Object.keys(productsAppearInLists).length}`)
+    console.log("Argumento de conclusão: para cada conjunto de venda que houver compra de adoçante também deverá estar composto com de café e leite")
+    console.log(`Foram localizadas listas que contém somente ${mentionedProducts[0]}, ${mentionedProducts[1]} ou ${mentionedProducts[2]}` )
+    console.log(`Listas com produtos parciais:\n${formattedTable}`);
+    console.log(`Listas ${listsWithOneOrTwoProducts.join(', ')} não contêm os 3 produtos ${mentionedProducts.join(', ')}
+    logo não é viável a aplicação de desconto.`);
+
+
+} else if (listsWithAllProducts.length > 0) {
+    console.log(`Total de conjuntos de vendas computadas ${Object.keys(productsAppearInLists).length}`)
+    console.log("Argumento de conclusão: para cada conjunto de venda que houver compra de adoçante também deverá estar composto com de café e leite")
+    console.log("Não foram localizadas listas parcialmente compostas por esses produtos")
+    console.log(`Na base de dados analisada, foram encontradas listas que contém ${mentionedProducts.join(', ')} Logo é viável a aplicação de desconto nas seguintes vendas.`);
+    console.log('----------------------------------------------------------------------------------------------------------------------------------------')
+    const formattedTable = formatListAsTable(listsWithAllProducts);
+    console.log(`Listas com os três produtos:\n${formattedTable}`);
 } else {
-  console.log(`Não existe lista que contenha os três produtos logo a conclusão do argumento é falso ${mentionedProducts.join(', ')}.`);
+    console.log(`Não existem listas que contém os três produtos logo não há necessidade de aplicar o desconto ${mentionedProducts.join(', ')}.`);
 }
 
 
